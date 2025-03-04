@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: test_task
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build:
+      context: ..
+      dockerfile: devops/Dockerfile
+    volumes:
+      - ../src:/app
+      - ../static:/app/static
+    ports:
+      - "8800:8800"
+    depends_on:
+      - db
+    environment:
+      POSTGRES_DB: test_task
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      DJANGO_SECRET_KEY: secret-key
+      DJANGO_DEBUG: "False"
+      DJANGO_ALLOWED_HOSTS: "*"
+      DJANGO_LANGUAGE_CODE: "en-us"
+      DJANGO_TIME_ZONE: "UTC"
+      DJANGO_STATIC_URL: "static/"
+
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py generate_test_data --departments 25 --employees 100000 --max-depth 5 &&
+             gunicorn settings.wsgi:application --bind 0.0.0.0:8800"
+
+
+volumes:
+  postgres_data:
