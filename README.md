@@ -8,7 +8,7 @@
 
 ```shell
 cd devops
-docker-compose up --duild
+docker-compose up --build
 ```
 
 Логин и пароль от админки - admin, admin
