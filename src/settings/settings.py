@@ -1,9 +1,7 @@
-import logging
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-logging.error(f'BASE_DIR = {BASE_DIR}')
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'boo')
 
